@@ -17,6 +17,7 @@ public class SeekBar : GraphicsView, IDrawable
 
         DrawSeekLines(canvas, 5, 40, (float)Width - 10, 21);
         DrawPositionMarker(canvas, 0, 55, 10, 21);
+        DrawStartMarker(canvas, 0, 25, 10, 15);
     }
 
     private static void DrawSeekLines(ICanvas canvas, float x, float y, float w, float h)
@@ -64,6 +65,24 @@ public class SeekBar : GraphicsView, IDrawable
         canvas.FillPath(path);
 
         canvas.StrokeColor = Colors.Black;
+        canvas.StrokeSize = 1;
+        canvas.DrawPath(path);
+    }
+
+    private static void DrawStartMarker(ICanvas canvas, float x, float y, float w, float h)
+    {
+        var path = new PathF();
+
+        path.MoveTo(x + w, y);
+        path.LineTo(x + w, y + h);
+
+        path.LineTo(x, y + h);
+        path.LineTo(x + w, y);
+
+        canvas.FillColor = Color.FromArgb("#ffffbbbb");
+        canvas.FillPath(path);
+
+        canvas.StrokeColor = Color.FromArgb("#ffff7777");
         canvas.StrokeSize = 1;
         canvas.DrawPath(path);
     }
