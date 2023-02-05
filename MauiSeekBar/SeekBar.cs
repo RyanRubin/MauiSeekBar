@@ -1,4 +1,6 @@
-﻿namespace MauiSeekBar;
+﻿using Font = Microsoft.Maui.Graphics.Font;
+
+namespace MauiSeekBar;
 
 public class SeekBar : GraphicsView, IDrawable
 {
@@ -9,6 +11,9 @@ public class SeekBar : GraphicsView, IDrawable
     private static readonly Color SeekLinesStrokeColor = Colors.Black;
     private static readonly Color PositionMarkerFillColor = Colors.White;
     private static readonly Color PositionMarkerStrokeColor = Colors.Black;
+    private static readonly Color PositionTextFillColor = Color.FromArgb("#ffeeeeee");
+    private static readonly Color PositionTextStrokeColor = Colors.Gray;
+    private static readonly Color PositionTextFontColor = Colors.Gray;
 
     public SeekBar()
     {
@@ -26,6 +31,7 @@ public class SeekBar : GraphicsView, IDrawable
         DrawPositionMarker(canvas, 0, 58, 10, 19);
         DrawStartMarker(canvas, 0, 30, 13, 13);
         DrawEndMarker(canvas, 100, 30, 13, 13);
+        DrawPositionText(canvas, 5, 0, 95, 20);
     }
 
     private static void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)
@@ -121,5 +127,20 @@ public class SeekBar : GraphicsView, IDrawable
         canvas.StrokeColor = StartAndEndStrokeColor;
         canvas.StrokeSize = 1;
         canvas.DrawPath(path);
+    }
+
+    private static void DrawPositionText(ICanvas canvas, float x, float y, float w, float h)
+    {
+        canvas.FillColor = PositionTextFillColor;
+        canvas.FillRoundedRectangle(x, y, w, h, 3);
+
+        canvas.StrokeColor = PositionTextStrokeColor;
+        canvas.StrokeSize = 1;
+        canvas.DrawRoundedRectangle(x, y, w, h, 3);
+
+        canvas.FontColor = PositionTextFontColor;
+        canvas.FontSize = 15;
+        canvas.Font = Font.Default;
+        canvas.DrawString("00:00:00.000", x + 5, y, w - 10, h, HorizontalAlignment.Left, VerticalAlignment.Top);
     }
 }
