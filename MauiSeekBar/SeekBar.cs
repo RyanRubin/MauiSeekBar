@@ -4,6 +4,12 @@ public class SeekBar : GraphicsView, IDrawable
 {
     private const int SeekLinesCount = 100;
 
+    private static readonly Color StartAndEndFillColor = Color.FromArgb("#ffffbbbb");
+    private static readonly Color StartAndEndStrokeColor = Color.FromArgb("#ffff7777");
+    private static readonly Color SeekLinesStrokeColor = Colors.Black;
+    private static readonly Color PositionMarkerFillColor = Colors.White;
+    private static readonly Color PositionMarkerStrokeColor = Colors.Black;
+
     public SeekBar()
     {
         Drawable = this;
@@ -15,10 +21,21 @@ public class SeekBar : GraphicsView, IDrawable
         //canvas.FillColor = Colors.LightGray;
         //canvas.FillRectangle(0, 0, (float)Width, (float)Height);
 
+        DrawStartToEndBar(canvas, 10, 43, 90, 15);
         DrawSeekLines(canvas, 5, 40, (float)Width - 10, 21);
         DrawPositionMarker(canvas, 0, 55, 10, 21);
         DrawStartMarker(canvas, 0, 25, 10, 15);
         DrawEndMarker(canvas, 100, 25, 10, 15);
+    }
+
+    private static void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)
+    {
+        canvas.FillColor = StartAndEndFillColor;
+        canvas.FillRectangle(x, y, w, h);
+
+        canvas.StrokeColor = StartAndEndStrokeColor;
+        canvas.StrokeSize = 1;
+        canvas.DrawRectangle(x, y, w, h);
     }
 
     private static void DrawSeekLines(ICanvas canvas, float x, float y, float w, float h)
@@ -26,7 +43,7 @@ public class SeekBar : GraphicsView, IDrawable
         float linesSpacing = w / (SeekLinesCount - 1);
         for (int i = 0; i < SeekLinesCount; i++)
         {
-            canvas.StrokeColor = Colors.Black;
+            canvas.StrokeColor = SeekLinesStrokeColor;
             if (i == 0 || i == SeekLinesCount - 1)
             {
                 canvas.StrokeSize = 3;
@@ -62,10 +79,10 @@ public class SeekBar : GraphicsView, IDrawable
         path.LineTo(x, y + 5);
         path.LineTo(x + w / 2, y);
 
-        canvas.FillColor = Colors.White;
+        canvas.FillColor = PositionMarkerFillColor;
         canvas.FillPath(path);
 
-        canvas.StrokeColor = Colors.Black;
+        canvas.StrokeColor = PositionMarkerStrokeColor;
         canvas.StrokeSize = 1;
         canvas.DrawPath(path);
     }
@@ -80,10 +97,10 @@ public class SeekBar : GraphicsView, IDrawable
         path.LineTo(x, y + h);
         path.LineTo(x + w, y);
 
-        canvas.FillColor = Color.FromArgb("#ffffbbbb");
+        canvas.FillColor = StartAndEndFillColor;
         canvas.FillPath(path);
 
-        canvas.StrokeColor = Color.FromArgb("#ffff7777");
+        canvas.StrokeColor = StartAndEndStrokeColor;
         canvas.StrokeSize = 1;
         canvas.DrawPath(path);
     }
@@ -98,10 +115,10 @@ public class SeekBar : GraphicsView, IDrawable
         path.LineTo(x, y + h);
         path.LineTo(x, y);
 
-        canvas.FillColor = Color.FromArgb("#ffffbbbb");
+        canvas.FillColor = StartAndEndFillColor;
         canvas.FillPath(path);
 
-        canvas.StrokeColor = Color.FromArgb("#ffff7777");
+        canvas.StrokeColor = StartAndEndStrokeColor;
         canvas.StrokeSize = 1;
         canvas.DrawPath(path);
     }
