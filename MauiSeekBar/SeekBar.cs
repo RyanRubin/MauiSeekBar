@@ -27,11 +27,11 @@ public class SeekBar : GraphicsView, IDrawable
         //canvas.FillRectangle(0, 0, (float)Width, (float)Height);
 
         DrawStartToEndBar(canvas, 13, 43, 87, 15);
-        DrawSeekLines(canvas, 5, 40, (float)Width - 10, 21);
-        DrawPositionMarker(canvas, 0, 58, 10, 19);
+        DrawSeekLines(canvas, 13, 40, (float)Width - 26, 21);
+        DrawPositionMarker(canvas, 8, 58, 10, 19);
         DrawStartMarker(canvas, 0, 30, 13, 13);
         DrawEndMarker(canvas, 100, 30, 13, 13);
-        DrawPositionText(canvas, 5, 0, 95, 20);
+        DrawPositionText(canvas, 8, 0, 95, 20);
     }
 
     private static void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)
