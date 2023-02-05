@@ -5,7 +5,7 @@ public class SeekBar : GraphicsView, IDrawable
     private const int SeekLinesCount = 100;
 
     private static readonly Color StartAndEndFillColor = Color.FromArgb("#ffffbbbb");
-    private static readonly Color StartAndEndStrokeColor = Color.FromArgb("#ffff7777");
+    private static readonly Color StartAndEndStrokeColor = Colors.DarkRed;
     private static readonly Color SeekLinesStrokeColor = Colors.Black;
     private static readonly Color PositionMarkerFillColor = Colors.White;
     private static readonly Color PositionMarkerStrokeColor = Colors.Black;
@@ -21,11 +21,11 @@ public class SeekBar : GraphicsView, IDrawable
         //canvas.FillColor = Colors.LightGray;
         //canvas.FillRectangle(0, 0, (float)Width, (float)Height);
 
-        DrawStartToEndBar(canvas, 10, 43, 90, 15);
+        DrawStartToEndBar(canvas, 13, 43, 87, 15);
         DrawSeekLines(canvas, 5, 40, (float)Width - 10, 21);
-        DrawPositionMarker(canvas, 0, 58, 10, 21);
-        DrawStartMarker(canvas, 0, 28, 10, 15);
-        DrawEndMarker(canvas, 100, 28, 10, 15);
+        DrawPositionMarker(canvas, 0, 58, 10, 19);
+        DrawStartMarker(canvas, 0, 30, 13, 13);
+        DrawEndMarker(canvas, 100, 30, 13, 13);
     }
 
     private static void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)

@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:MauiSeekBar"
              x:Class="MauiSeekBar.MainPage">
     <Grid RowDefinitions="*,100">
-        <Grid Grid.Row="0" BackgroundColor="Black"></Grid>
-        <local:SeekBar Grid.Row="1"/>
+        <Grid Grid.Row="0" Margin="10" BackgroundColor="Black"></Grid>
+        <local:SeekBar Grid.Row="1" Margin="5"/>
     </Grid>
 </ContentPage>
