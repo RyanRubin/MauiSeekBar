@@ -23,9 +23,9 @@ public class SeekBar : GraphicsView, IDrawable
 
         DrawStartToEndBar(canvas, 10, 43, 90, 15);
         DrawSeekLines(canvas, 5, 40, (float)Width - 10, 21);
-        DrawPositionMarker(canvas, 0, 55, 10, 21);
-        DrawStartMarker(canvas, 0, 25, 10, 15);
-        DrawEndMarker(canvas, 100, 25, 10, 15);
+        DrawPositionMarker(canvas, 0, 58, 10, 21);
+        DrawStartMarker(canvas, 0, 28, 10, 15);
+        DrawEndMarker(canvas, 100, 28, 10, 15);
     }
 
     private static void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)
