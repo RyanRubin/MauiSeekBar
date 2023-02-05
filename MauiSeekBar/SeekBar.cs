@@ -4,7 +4,10 @@ namespace MauiSeekBar;
 
 public class SeekBar : GraphicsView, IDrawable
 {
+    private const float SeekLinesX = 13;
     private const int SeekLinesCount = 100;
+    private const float PositionMarkerWidth = 10;
+    private const float PositionMarkerHalfWidth = PositionMarkerWidth / 2;
 
     private static readonly Color StartAndEndFillColor = Color.FromArgb("#ffffbbbb");
     private static readonly Color StartAndEndStrokeColor = Colors.DarkRed;
@@ -15,9 +18,41 @@ public class SeekBar : GraphicsView, IDrawable
     private static readonly Color PositionTextStrokeColor = Colors.Gray;
     private static readonly Color PositionTextFontColor = Colors.Gray;
 
+    private float seekLinesWidth;
+    private float positionMarkerX = SeekLinesX - PositionMarkerHalfWidth;
+
     public SeekBar()
     {
         Drawable = this;
+        StartInteraction += SeekBar_StartInteraction;
+        DragInteraction += SeekBar_DragInteraction;
+        EndInteraction += SeekBar_EndInteraction;
+    }
+
+    private void SeekBar_StartInteraction(object? sender, TouchEventArgs e)
+    {
+        MovePositionMarker(e.Touches[0].X);
+    }
+
+    private void SeekBar_DragInteraction(object? sender, TouchEventArgs e)
+    {
+        MovePositionMarker(e.Touches[0].X);
+    }
+
+    private void SeekBar_EndInteraction(object? sender, TouchEventArgs e)
+    {
+
+    }
+
+    private void MovePositionMarker(float x)
+    {
+        positionMarkerX = x - PositionMarkerHalfWidth;
+        positionMarkerX = Math.Clamp(
+            positionMarkerX,
+            SeekLinesX - PositionMarkerHalfWidth,
+            seekLinesWidth + PositionMarkerHalfWidth + 3
+        );
+        Invalidate();
     }
 
     public void Draw(ICanvas canvas, RectF dirtyRect)
@@ -27,8 +62,9 @@ public class SeekBar : GraphicsView, IDrawable
         //canvas.FillRectangle(0, 0, (float)Width, (float)Height);
 
         DrawStartToEndBar(canvas, 13, 43, 87, 15);
-        DrawSeekLines(canvas, 13, 40, (float)Width - 26, 21);
-        DrawPositionMarker(canvas, 8, 58, 10, 19);
+        seekLinesWidth = (float)Width - SeekLinesX * 2;
+        DrawSeekLines(canvas, SeekLinesX, 40, seekLinesWidth, 21);
+        DrawPositionMarker(canvas, positionMarkerX, 58, PositionMarkerWidth, 19);
         DrawStartMarker(canvas, 0, 30, 13, 13);
         DrawEndMarker(canvas, 100, 30, 13, 13);
         DrawPositionText(canvas, 8, 0, 95, 20);
@@ -141,6 +177,14 @@ public class SeekBar : GraphicsView, IDrawable
         canvas.FontColor = PositionTextFontColor;
         canvas.FontSize = 15;
         canvas.Font = Font.Default;
-        canvas.DrawString("00:00:00.000", x + 5, y, w - 10, h, HorizontalAlignment.Left, VerticalAlignment.Top);
+        canvas.DrawString(
+            "00:00:00.000",
+            x + 5,
+            y,
+            w - 10,
+            h,
+            HorizontalAlignment.Left,
+            VerticalAlignment.Top
+        );
     }
 }
