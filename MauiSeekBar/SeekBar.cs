@@ -24,11 +24,15 @@ public class SeekBar : GraphicsView, IDrawable
     private float positionMarkerX = SeekLinesX - PositionMarkerHalfWidth;
     private float positionTextX = SeekLinesX;
 
-    public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), false);
-    public bool IsStartAndEndMarkerVisible
+    public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay);
+    public bool IsStartAndEndMarkerVisible { get => (bool)GetValue(IsStartAndEndMarkerVisibleProperty); set => SetValue(IsStartAndEndMarkerVisibleProperty, value); }
+
+    public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnPositionChanged);
+    public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
+    private static void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        get => (bool)GetValue(IsStartAndEndMarkerVisibleProperty);
-        set => SetValue(IsStartAndEndMarkerVisibleProperty, value);
+        var seekBar = (SeekBar)bindable;
+        seekBar.Invalidate();
     }
 
     public SeekBar()
@@ -185,7 +189,7 @@ public class SeekBar : GraphicsView, IDrawable
         canvas.DrawPath(path);
     }
 
-    private static void DrawPositionText(ICanvas canvas, float x, float y, float w, float h)
+    private void DrawPositionText(ICanvas canvas, float x, float y, float w, float h)
     {
         canvas.FillColor = PositionTextFillColor;
         canvas.FillRoundedRectangle(x, y, w, h, 3);
@@ -198,7 +202,7 @@ public class SeekBar : GraphicsView, IDrawable
         canvas.FontSize = 15;
         canvas.Font = Font.Default;
         canvas.DrawString(
-            "00:00:00.000",
+            Position.ToString(@"hh\:mm\:ss\.fff"),
             x + 5,
             y,
             w - 10,

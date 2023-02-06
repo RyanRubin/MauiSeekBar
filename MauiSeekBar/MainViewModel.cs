@@ -20,6 +20,17 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    private TimeSpan position;
+    public TimeSpan Position
+    {
+        get => position;
+        set
+        {
+            position = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Position)));
+        }
+    }
+
     public ICommand? PlayOrPauseCommand { get; set; }
 
     public MainViewModel()

@@ -8,11 +8,15 @@
         <local:VideoPlayer x:Name="media"
                            Grid.Row="0"
                            Margin="10,10,10,0"
+                           Position="{Binding Position}"
                            Source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
             <local:VideoPlayer.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding PlayOrPauseCommand}"/>
             </local:VideoPlayer.GestureRecognizers>
         </local:VideoPlayer>
-        <local:SeekBar Grid.Row="1" Margin="5,0,5,5" IsStartAndEndMarkerVisible="True"/>
+        <local:SeekBar Grid.Row="1"
+                       Margin="5,0,5,5"
+                       IsStartAndEndMarkerVisible="True"
+                       Position="{Binding Position}"/>
     </Grid>
 </ContentPage>
