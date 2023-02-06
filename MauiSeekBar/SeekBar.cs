@@ -8,6 +8,8 @@ public class SeekBar : GraphicsView, IDrawable
     private const int SeekLinesCount = 100;
     private const float PositionMarkerWidth = 10;
     private const float PositionMarkerHalfWidth = PositionMarkerWidth / 2;
+    private const float PositionTextWidth = 95;
+    private const float PositionTextHalfWidth = PositionTextWidth / 2;
 
     private static readonly Color StartAndEndFillColor = Color.FromArgb("#ffffbbbb");
     private static readonly Color StartAndEndStrokeColor = Colors.DarkRed;
@@ -20,6 +22,7 @@ public class SeekBar : GraphicsView, IDrawable
 
     private float seekLinesWidth;
     private float positionMarkerX = SeekLinesX - PositionMarkerHalfWidth;
+    private float positionTextX = SeekLinesX;
 
     public SeekBar()
     {
@@ -50,24 +53,28 @@ public class SeekBar : GraphicsView, IDrawable
         positionMarkerX = Math.Clamp(
             positionMarkerX,
             SeekLinesX - PositionMarkerHalfWidth,
-            seekLinesWidth + PositionMarkerHalfWidth + 3
+            SeekLinesX + seekLinesWidth - PositionMarkerHalfWidth
         );
+
+        positionTextX = x - PositionTextHalfWidth;
+        positionTextX = Math.Clamp(
+            positionTextX,
+            SeekLinesX,
+            SeekLinesX + seekLinesWidth - PositionTextWidth
+        );
+
         Invalidate();
     }
 
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
-        // TODO debug
-        //canvas.FillColor = Colors.LightGray;
-        //canvas.FillRectangle(0, 0, (float)Width, (float)Height);
-
         DrawStartToEndBar(canvas, 13, 43, 87, 15);
         seekLinesWidth = (float)Width - SeekLinesX * 2;
         DrawSeekLines(canvas, SeekLinesX, 40, seekLinesWidth, 21);
         DrawPositionMarker(canvas, positionMarkerX, 58, PositionMarkerWidth, 19);
         DrawStartMarker(canvas, 0, 30, 13, 13);
         DrawEndMarker(canvas, 100, 30, 13, 13);
-        DrawPositionText(canvas, 8, 0, 95, 20);
+        DrawPositionText(canvas, positionTextX, 0, PositionTextWidth, 20);
     }
 
     private static void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)
