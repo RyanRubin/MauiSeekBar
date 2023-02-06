@@ -24,6 +24,13 @@ public class SeekBar : GraphicsView, IDrawable
     private float positionMarkerX = SeekLinesX - PositionMarkerHalfWidth;
     private float positionTextX = SeekLinesX;
 
+    public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), false);
+    public bool IsStartAndEndMarkerVisible
+    {
+        get => (bool)GetValue(IsStartAndEndMarkerVisibleProperty);
+        set => SetValue(IsStartAndEndMarkerVisibleProperty, value);
+    }
+
     public SeekBar()
     {
         Drawable = this;
@@ -68,12 +75,18 @@ public class SeekBar : GraphicsView, IDrawable
 
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
-        DrawStartToEndBar(canvas, 13, 43, 87, 15);
+        if (IsStartAndEndMarkerVisible)
+        {
+            DrawStartToEndBar(canvas, 13, 43, 87, 15);
+        }
         seekLinesWidth = (float)Width - SeekLinesX * 2;
         DrawSeekLines(canvas, SeekLinesX, 40, seekLinesWidth, 21);
         DrawPositionMarker(canvas, positionMarkerX, 58, PositionMarkerWidth, 19);
-        DrawStartMarker(canvas, 0, 30, 13, 13);
-        DrawEndMarker(canvas, 100, 30, 13, 13);
+        if (IsStartAndEndMarkerVisible)
+        {
+            DrawStartMarker(canvas, 0, 30, 13, 13);
+            DrawEndMarker(canvas, 100, 30, 13, 13);
+        }
         DrawPositionText(canvas, positionTextX, 0, PositionTextWidth, 20);
     }
 

@@ -5,6 +5,6 @@
              x:Class="MauiSeekBar.MainPage">
     <Grid RowDefinitions="*,100">
         <Grid Grid.Row="0" Margin="10,10,10,0" BackgroundColor="Black"></Grid>
-        <local:SeekBar Grid.Row="1" Margin="5,0,5,5"/>
+        <local:SeekBar Grid.Row="1" Margin="5,0,5,5" IsStartAndEndMarkerVisible="True"/>
     </Grid>
 </ContentPage>
