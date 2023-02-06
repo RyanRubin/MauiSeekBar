@@ -77,15 +77,15 @@ public class SeekBar : GraphicsView, IDrawable
     {
         if (IsStartAndEndMarkerVisible)
         {
-            DrawStartToEndBar(canvas, 13, 43, 87, 15);
+            DrawStartToEndBar(canvas, 13, 33, 87, 15);
         }
         seekLinesWidth = (float)Width - SeekLinesX * 2;
-        DrawSeekLines(canvas, SeekLinesX, 40, seekLinesWidth, 21);
-        DrawPositionMarker(canvas, positionMarkerX, 58, PositionMarkerWidth, 19);
+        DrawSeekLines(canvas, SeekLinesX, 30, seekLinesWidth, 21);
+        DrawPositionMarker(canvas, positionMarkerX, 48, PositionMarkerWidth, 19);
         if (IsStartAndEndMarkerVisible)
         {
-            DrawStartMarker(canvas, 0, 30, 13, 13);
-            DrawEndMarker(canvas, 100, 30, 13, 13);
+            DrawStartMarker(canvas, 0, 20, 13, 13);
+            DrawEndMarker(canvas, 100, 20, 13, 13);
         }
         DrawPositionText(canvas, positionTextX, 0, PositionTextWidth, 20);
     }
