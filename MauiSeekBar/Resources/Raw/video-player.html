@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        html,
+        body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #videoPlayer {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <video id="videoPlayer" />
+    <script>
+        const loadVideo = (videoFileUri) => {
+            addEventListener('contextmenu', (e) => e.preventDefault());
+            document.getElementById('videoPlayer').src = videoFileUri;
+        };
+
+        const play = () => {
+            document.getElementById('videoPlayer').play();
+        };
+
+        const pause = () => {
+            document.getElementById('videoPlayer').pause();
+        };
+    </script>
+</body>
+</html>

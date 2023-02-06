@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Maui.Core.Primitives;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows.Input;
 
 namespace MauiSeekBar;
@@ -8,7 +7,18 @@ public class MainViewModel : INotifyPropertyChanged
 {
     public Action? Play { get; set; }
     public Action? Pause { get; set; }
-    public Func<MediaElementState>? GetCurrentState { get; set; }
+    public Func<bool>? GetIsPlaying { get; set; }
+
+    private string? videoFile;
+    public string? VideoFile
+    {
+        get => videoFile;
+        set
+        {
+            videoFile = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VideoFile)));
+        }
+    }
 
     public ICommand? PlayOrPauseCommand { get; set; }
 
@@ -19,7 +29,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void PlayOrPause()
     {
-        if (GetCurrentState?.Invoke() == MediaElementState.Playing)
+        if (GetIsPlaying?.Invoke() == true)
         {
             Pause?.Invoke();
         }

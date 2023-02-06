@@ -1,20 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:local="clr-namespace:MauiSeekBar"
              x:Class="MauiSeekBar.MainPage"
              x:DataType="local:MainViewModel">
     <Grid RowDefinitions="*,100">
-        <toolkit:MediaElement x:Name="media"
-                              Grid.Row="0"
-                              Margin="10,10,10,0"
-                              ShouldShowPlaybackControls="False"
-                              Source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
-            <toolkit:MediaElement.GestureRecognizers>
+        <local:VideoPlayer x:Name="media"
+                           Grid.Row="0"
+                           Margin="10,10,10,0"
+                           Source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
+            <local:VideoPlayer.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding PlayOrPauseCommand}"/>
-            </toolkit:MediaElement.GestureRecognizers>
-        </toolkit:MediaElement>
+            </local:VideoPlayer.GestureRecognizers>
+        </local:VideoPlayer>
         <local:SeekBar Grid.Row="1" Margin="5,0,5,5" IsStartAndEndMarkerVisible="True"/>
     </Grid>
 </ContentPage>
