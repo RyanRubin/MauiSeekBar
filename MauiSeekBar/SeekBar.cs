@@ -33,6 +33,14 @@ public class SeekBar : GraphicsView, IDrawable
         seekBar.Invalidate();
     }
 
+    public static readonly BindableProperty IsPositionTextVisibleProperty = BindableProperty.Create(nameof(IsPositionTextVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnIsPositionTextVisibleChanged);
+    public bool IsPositionTextVisible { get => (bool)GetValue(IsPositionTextVisibleProperty); set => SetValue(IsPositionTextVisibleProperty, value); }
+    private static void OnIsPositionTextVisibleChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var seekBar = (SeekBar)bindable;
+        seekBar.Invalidate();
+    }
+
     public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnPositionChanged);
     public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
     private static void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
@@ -124,7 +132,10 @@ public class SeekBar : GraphicsView, IDrawable
             DrawStartMarker(canvas, 0, 20, 13, 13);
             DrawEndMarker(canvas, 100, 20, 13, 13);
         }
-        DrawPositionText(canvas, positionTextX, 0, PositionTextWidth, 20);
+        if (IsPositionTextVisible)
+        {
+            DrawPositionText(canvas, positionTextX, 0, PositionTextWidth, 20);
+        }
     }
 
     private static void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)

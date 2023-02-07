@@ -67,7 +67,7 @@ public class VideoPlayer : ContentView
             do
             {
                 await Task.Delay(100);
-                retVal = await webView.EvaluateJavaScriptAsync($"getDuration()");
+                retVal = await webView.EvaluateJavaScriptAsync("getDuration()");
             } while (string.IsNullOrEmpty(retVal));
             double millis = double.Parse(retVal) * 1000;
             Duration = new TimeSpan(0, 0, 0, 0, (int)millis);
@@ -79,18 +79,20 @@ public class VideoPlayer : ContentView
         if (Position >= Duration)
         {
             Position = default;
+            stopwatch.Reset();
+            webView?.EvaluateJavaScriptAsync("setCurrentTime(0)");
         }
         stopwatch.Start();
         timer.Start();
         IsPlaying = true;
-        webView?.EvaluateJavaScriptAsync($"play()");
+        webView?.EvaluateJavaScriptAsync("play()");
     }
 
     public void Pause()
     {
-        stopwatch.Start();
+        stopwatch.Stop();
         timer.Stop();
         IsPlaying = false;
-        webView?.EvaluateJavaScriptAsync($"pause()");
+        webView?.EvaluateJavaScriptAsync("pause()");
     }
 }

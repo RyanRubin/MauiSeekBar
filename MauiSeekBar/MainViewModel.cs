@@ -7,7 +7,6 @@ public class MainViewModel : INotifyPropertyChanged
 {
     public Action? Play { get; set; }
     public Action? Pause { get; set; }
-    public Func<bool>? GetIsPlaying { get; set; }
 
     private string? videoFile;
     public string? VideoFile
@@ -42,6 +41,17 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    private bool isPlaying;
+    public bool IsPlaying
+    {
+        get => isPlaying;
+        set
+        {
+            isPlaying = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPlaying)));
+        }
+    }
+
     public ICommand? PlayOrPauseCommand { get; set; }
 
     public MainViewModel()
@@ -51,7 +61,7 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void PlayOrPause()
     {
-        if (GetIsPlaying?.Invoke() == true)
+        if (IsPlaying)
         {
             Pause?.Invoke();
         }

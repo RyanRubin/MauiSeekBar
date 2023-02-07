@@ -13,7 +13,6 @@ public partial class MainPage : ContentPage
         var vm = new MainViewModel();
         vm.Play += () => media.Play();
         vm.Pause += () => media.Pause();
-        vm.GetIsPlaying += () => media.IsPlaying;
         BindingContext = vm;
     }
 }
