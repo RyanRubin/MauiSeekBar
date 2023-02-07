@@ -246,7 +246,7 @@ public class SeekBar : GraphicsView, IDrawable
         canvas.FontSize = 15;
         canvas.Font = Font.Default;
         canvas.DrawString(
-            Position.ToString(@"hh\:mm\:ss\.fff"),
+            Position.ToString("hh\\:mm\\:ss\\.fff"),
             x + 5,
             y,
             w - 10,
