@@ -23,17 +23,27 @@
 <body>
     <video id="videoPlayer" />
     <script>
+        const videoPlayer = document.getElementById('videoPlayer');
+
         const loadVideo = (videoFileUri) => {
             addEventListener('contextmenu', (e) => e.preventDefault());
-            document.getElementById('videoPlayer').src = videoFileUri;
+            videoPlayer.src = videoFileUri;
+        };
+
+        const getDuration = () => {
+            if (videoPlayer.readyState === HTMLMediaElement.HAVE_ENOUGH_DATA) {
+                return videoPlayer.duration;
+            } else {
+                return;
+            }
         };
 
         const play = () => {
-            document.getElementById('videoPlayer').play();
+            videoPlayer.play();
         };
 
         const pause = () => {
-            document.getElementById('videoPlayer').pause();
+            videoPlayer.pause();
         };
     </script>
 </body>

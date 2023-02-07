@@ -31,6 +31,17 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
+    private TimeSpan duration;
+    public TimeSpan Duration
+    {
+        get => duration;
+        set
+        {
+            duration = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Duration)));
+        }
+    }
+
     public ICommand? PlayOrPauseCommand { get; set; }
 
     public MainViewModel()

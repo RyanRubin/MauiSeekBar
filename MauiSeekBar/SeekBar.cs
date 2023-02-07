@@ -21,7 +21,8 @@ public class SeekBar : GraphicsView, IDrawable
     private static readonly Color PositionTextFontColor = Colors.Gray;
 
     private float ticksWidth;
-    private float positionMarkerX = TicksX - PositionMarkerHalfWidth;
+    private readonly float positionMarkerStartX = TicksX - PositionMarkerHalfWidth;
+    private float positionMarkerX;
     private float positionTextX = TicksX;
 
     public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnIsStartAndEndMarkerVisibleChanged);
@@ -37,6 +38,7 @@ public class SeekBar : GraphicsView, IDrawable
     private static void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var seekBar = (SeekBar)bindable;
+        seekBar.MovePositionMarker(seekBar.CalculatePositionMarkerX());
         seekBar.Invalidate();
     }
 
@@ -45,7 +47,24 @@ public class SeekBar : GraphicsView, IDrawable
     private static void OnDurationChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var seekBar = (SeekBar)bindable;
+        seekBar.MovePositionMarker(seekBar.CalculatePositionMarkerX());
         seekBar.Invalidate();
+    }
+
+    private float CalculatePositionMarkerX()
+    {
+        float positionMillis = (float)Position.TotalMilliseconds;
+        float durationMillis = (float)Duration.TotalMilliseconds;
+        float retVal;
+        if (durationMillis == 0)
+        {
+            retVal = 0;
+        }
+        else
+        {
+            retVal = positionMillis / durationMillis * ticksWidth + positionMarkerStartX;
+        }
+        return retVal;
     }
 
     public SeekBar()
@@ -54,6 +73,7 @@ public class SeekBar : GraphicsView, IDrawable
         StartInteraction += SeekBar_StartInteraction;
         DragInteraction += SeekBar_DragInteraction;
         EndInteraction += SeekBar_EndInteraction;
+        positionMarkerX = positionMarkerStartX;
     }
 
     private void SeekBar_StartInteraction(object? sender, TouchEventArgs e)

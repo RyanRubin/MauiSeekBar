@@ -17,6 +17,9 @@ public class VideoPlayer : ContentView
     public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay);
     public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
 
+    public static readonly BindableProperty DurationProperty = BindableProperty.Create(nameof(Duration), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay);
+    public TimeSpan Duration { get => (TimeSpan)GetValue(DurationProperty); set => SetValue(DurationProperty, value); }
+
     private WebView? webView;
 
     private readonly string videoPlayerHtmlFileUri;
@@ -49,6 +52,14 @@ public class VideoPlayer : ContentView
         if (webView != null && string.Equals(e.Url, videoPlayerHtmlFileUri, StringComparison.InvariantCultureIgnoreCase))
         {
             await webView.EvaluateJavaScriptAsync($"loadVideo('{new Uri(Source).AbsoluteUri}')");
+            string retVal;
+            do
+            {
+                await Task.Delay(100);
+                retVal = await webView.EvaluateJavaScriptAsync($"getDuration()");
+            } while (string.IsNullOrEmpty(retVal));
+            double millis = double.Parse(retVal) * 1000;
+            Duration = new TimeSpan(0, 0, 0, 0, (int)millis);
         }
     }
 

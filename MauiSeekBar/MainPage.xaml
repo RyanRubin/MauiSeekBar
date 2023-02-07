@@ -9,7 +9,8 @@
                            Grid.Row="0"
                            Margin="10,10,10,0"
                            Position="{Binding Position}"
-                           Source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
+                           Duration="{Binding Duration}"
+                           Source="file:///C:/Temp/mp4.mp4">
             <local:VideoPlayer.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding PlayOrPauseCommand}"/>
             </local:VideoPlayer.GestureRecognizers>
@@ -17,6 +18,7 @@
         <local:SeekBar Grid.Row="1"
                        Margin="5,0,5,5"
                        IsStartAndEndMarkerVisible="True"
-                       Position="{Binding Position}"/>
+                       Position="{Binding Position}"
+                       Duration="{Binding Duration}"/>
     </Grid>
 </ContentPage>
