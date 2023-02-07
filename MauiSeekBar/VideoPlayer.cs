@@ -1,4 +1,6 @@
-﻿namespace MauiSeekBar;
+﻿using System.Diagnostics;
+
+namespace MauiSeekBar;
 
 public class VideoPlayer : ContentView
 {
@@ -23,15 +25,17 @@ public class VideoPlayer : ContentView
     private WebView? webView;
 
     private readonly string videoPlayerHtmlFileUri;
+    private readonly Stopwatch stopwatch;
     private readonly IDispatcherTimer timer;
 
     public VideoPlayer()
     {
         videoPlayerHtmlFileUri = new Uri(Path.Combine(AppContext.BaseDirectory, "video-player.html")).AbsoluteUri;
+        stopwatch = new Stopwatch();
         timer = Dispatcher.CreateTimer();
-        timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+        timer.Interval = new TimeSpan(0, 0, 0, 0, 25);
         timer.Tick += (sender, e) => {
-            Position = Position.Add(new TimeSpan(0, 0, 0, 0, 100));
+            Position = stopwatch.Elapsed;
             if (Position >= Duration)
             {
                 Pause();
@@ -76,6 +80,7 @@ public class VideoPlayer : ContentView
         {
             Position = default;
         }
+        stopwatch.Start();
         timer.Start();
         IsPlaying = true;
         webView?.EvaluateJavaScriptAsync($"play()");
@@ -83,6 +88,7 @@ public class VideoPlayer : ContentView
 
     public void Pause()
     {
+        stopwatch.Start();
         timer.Stop();
         IsPlaying = false;
         webView?.EvaluateJavaScriptAsync($"pause()");
