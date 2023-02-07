@@ -30,17 +30,12 @@ public class VideoPlayer : ContentView
         videoPlayerHtmlFileUri = new Uri(Path.Combine(AppContext.BaseDirectory, "video-player.html")).AbsoluteUri;
         timer = Dispatcher.CreateTimer();
         timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
-        timer.Tick += async (sender, e) => {
+        timer.Tick += (sender, e) => {
             Position = Position.Add(new TimeSpan(0, 0, 0, 0, 100));
-            if (webView != null)
+            if (Position >= Duration)
             {
-                string retVal = await webView.EvaluateJavaScriptAsync($"getEnded()");
-                bool isEnded = bool.Parse(retVal);
-                if (isEnded)
-                {
-                    Pause();
-                    Position = Duration;
-                }
+                Pause();
+                Position = Duration;
             }
         };
     }
@@ -77,6 +72,10 @@ public class VideoPlayer : ContentView
 
     public void Play()
     {
+        if (Position >= Duration)
+        {
+            Position = default;
+        }
         timer.Start();
         IsPlaying = true;
         webView?.EvaluateJavaScriptAsync($"play()");

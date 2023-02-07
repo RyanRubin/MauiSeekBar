@@ -62,7 +62,7 @@ public class SeekBar : GraphicsView, IDrawable
         }
         else
         {
-            retVal = positionMillis / durationMillis * ticksWidth + positionMarkerStartX;
+            retVal = positionMillis / durationMillis * ticksWidth + positionMarkerStartX + PositionMarkerHalfWidth;
         }
         return retVal;
     }
