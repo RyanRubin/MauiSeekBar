@@ -4,8 +4,8 @@ namespace MauiSeekBar;
 
 public class SeekBar : GraphicsView, IDrawable
 {
-    private const float SeekLinesX = 13;
-    private const int SeekLinesCount = 100;
+    private const float TicksX = 13;
+    private const int TicksCount = 101; // 0 to 100
     private const float PositionMarkerWidth = 10;
     private const float PositionMarkerHalfWidth = PositionMarkerWidth / 2;
     private const float PositionTextWidth = 95;
@@ -13,23 +13,36 @@ public class SeekBar : GraphicsView, IDrawable
 
     private static readonly Color StartAndEndFillColor = Color.FromArgb("#ffffbbbb");
     private static readonly Color StartAndEndStrokeColor = Colors.DarkRed;
-    private static readonly Color SeekLinesStrokeColor = Colors.Black;
+    private static readonly Color TicksStrokeColor = Colors.Black;
     private static readonly Color PositionMarkerFillColor = Colors.White;
     private static readonly Color PositionMarkerStrokeColor = Colors.Black;
     private static readonly Color PositionTextFillColor = Color.FromArgb("#ffeeeeee");
     private static readonly Color PositionTextStrokeColor = Colors.Gray;
     private static readonly Color PositionTextFontColor = Colors.Gray;
 
-    private float seekLinesWidth;
-    private float positionMarkerX = SeekLinesX - PositionMarkerHalfWidth;
-    private float positionTextX = SeekLinesX;
+    private float ticksWidth;
+    private float positionMarkerX = TicksX - PositionMarkerHalfWidth;
+    private float positionTextX = TicksX;
 
-    public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay);
+    public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnIsStartAndEndMarkerVisibleChanged);
     public bool IsStartAndEndMarkerVisible { get => (bool)GetValue(IsStartAndEndMarkerVisibleProperty); set => SetValue(IsStartAndEndMarkerVisibleProperty, value); }
+    private static void OnIsStartAndEndMarkerVisibleChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var seekBar = (SeekBar)bindable;
+        seekBar.Invalidate();
+    }
 
     public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnPositionChanged);
     public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
     private static void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var seekBar = (SeekBar)bindable;
+        seekBar.Invalidate();
+    }
+
+    public static readonly BindableProperty DurationProperty = BindableProperty.Create(nameof(Duration), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnDurationChanged);
+    public TimeSpan Duration { get => (TimeSpan)GetValue(DurationProperty); set => SetValue(DurationProperty, value); }
+    private static void OnDurationChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var seekBar = (SeekBar)bindable;
         seekBar.Invalidate();
@@ -63,15 +76,15 @@ public class SeekBar : GraphicsView, IDrawable
         positionMarkerX = x - PositionMarkerHalfWidth;
         positionMarkerX = Math.Clamp(
             positionMarkerX,
-            SeekLinesX - PositionMarkerHalfWidth,
-            SeekLinesX + seekLinesWidth - PositionMarkerHalfWidth
+            TicksX - PositionMarkerHalfWidth,
+            TicksX + ticksWidth - PositionMarkerHalfWidth
         );
 
         positionTextX = x - PositionTextHalfWidth;
         positionTextX = Math.Clamp(
             positionTextX,
-            SeekLinesX,
-            SeekLinesX + seekLinesWidth - PositionTextWidth
+            TicksX,
+            TicksX + ticksWidth - PositionTextWidth
         );
 
         Invalidate();
@@ -83,8 +96,8 @@ public class SeekBar : GraphicsView, IDrawable
         {
             DrawStartToEndBar(canvas, 13, 33, 87, 15);
         }
-        seekLinesWidth = (float)Width - SeekLinesX * 2;
-        DrawSeekLines(canvas, SeekLinesX, 30, seekLinesWidth, 21);
+        ticksWidth = (float)Width - TicksX * 2;
+        DrawTicks(canvas, TicksX, 30, ticksWidth, 21);
         DrawPositionMarker(canvas, positionMarkerX, 48, PositionMarkerWidth, 19);
         if (IsStartAndEndMarkerVisible)
         {
@@ -104,19 +117,19 @@ public class SeekBar : GraphicsView, IDrawable
         canvas.DrawRectangle(x, y, w, h);
     }
 
-    private static void DrawSeekLines(ICanvas canvas, float x, float y, float w, float h)
+    private static void DrawTicks(ICanvas canvas, float x, float y, float w, float h)
     {
-        float linesSpacing = w / (SeekLinesCount - 1);
-        for (int i = 0; i < SeekLinesCount; i++)
+        float ticksSpacing = w / (TicksCount - 1);
+        for (int i = 0; i < TicksCount; i++)
         {
-            canvas.StrokeColor = SeekLinesStrokeColor;
-            if (i == 0 || i == SeekLinesCount - 1)
+            canvas.StrokeColor = TicksStrokeColor;
+            if (i == 0 || i == TicksCount - 1)
             {
                 canvas.StrokeSize = 3;
                 canvas.DrawLine(
-                    x + i * linesSpacing,
+                    x + i * ticksSpacing,
                     y,
-                    x + i * linesSpacing,
+                    x + i * ticksSpacing,
                     y + h
                 );
             }
@@ -124,9 +137,9 @@ public class SeekBar : GraphicsView, IDrawable
             {
                 canvas.StrokeSize = 1;
                 canvas.DrawLine(
-                    x + i * linesSpacing,
+                    x + i * ticksSpacing,
                     y + 3,
-                    x + i * linesSpacing,
+                    x + i * ticksSpacing,
                     y + h - 3
                 );
             }
