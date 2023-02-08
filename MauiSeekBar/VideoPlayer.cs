@@ -34,6 +34,15 @@ public class VideoPlayer : ContentView
     private static async void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var videoPlayer = (VideoPlayer)bindable;
+        var position = (TimeSpan)newValue;
+        if (position < default(TimeSpan))
+        {
+            videoPlayer.Position = default;
+        }
+        else if (position > videoPlayer.Duration)
+        {
+            videoPlayer.Position = videoPlayer.Duration;
+        }
         await videoPlayer.SetCurrentTimeUsingPosition();
     }
 

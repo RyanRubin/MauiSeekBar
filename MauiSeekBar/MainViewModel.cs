@@ -53,22 +53,35 @@ public class MainViewModel : INotifyPropertyChanged
     }
 
     public ICommand? PlayOrPauseCommand { get; set; }
+    public ICommand? Rewind10SecCommand { get; set; }
+    public ICommand? Rewind1SecCommand { get; set; }
+    public ICommand? Forward1SecCommand { get; set; }
+    public ICommand? Forward10SecCommand { get; set; }
 
     public MainViewModel()
     {
-        PlayOrPauseCommand = new Command(PlayOrPause);
-    }
-
-    private void PlayOrPause()
-    {
-        if (IsPlaying)
-        {
-            Pause?.Invoke();
-        }
-        else
-        {
-            Play?.Invoke();
-        }
+        PlayOrPauseCommand = new Command(() => {
+            if (IsPlaying)
+            {
+                Pause?.Invoke();
+            }
+            else
+            {
+                Play?.Invoke();
+            }
+        });
+        Rewind10SecCommand = new Command(() => {
+            Position = Position.Add(new TimeSpan(0, 0, -10));
+        });
+        Rewind1SecCommand = new Command(() => {
+            Position = Position.Add(new TimeSpan(0, 0, -1));
+        });
+        Forward1SecCommand = new Command(() => {
+            Position = Position.Add(new TimeSpan(0, 0, 1));
+        });
+        Forward10SecCommand = new Command(() => {
+            Position = Position.Add(new TimeSpan(0, 0, 10));
+        });
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

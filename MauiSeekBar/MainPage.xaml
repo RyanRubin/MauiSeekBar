@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:MauiSeekBar"
              x:Class="MauiSeekBar.MainPage"
              x:DataType="local:MainViewModel">
-    <Grid RowDefinitions="*,100">
+    <Grid RowDefinitions="*,100,30">
         <local:VideoPlayer x:Name="media"
                            Grid.Row="0"
                            Margin="10,10,10,0"
@@ -28,5 +28,11 @@
                 </DataTrigger>
             </local:SeekBar.Triggers>
         </local:SeekBar>
+        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+            <Button Grid.Column="0" Text="--" Command="{Binding Rewind10SecCommand}"/>
+            <Button Grid.Column="1" Text="-" Command="{Binding Rewind1SecCommand}"/>
+            <Button Grid.Column="2" Text="+" Command="{Binding Forward1SecCommand}"/>
+            <Button Grid.Column="3" Text="++" Command="{Binding Forward10SecCommand}"/>
+        </Grid>
     </Grid>
 </ContentPage>
