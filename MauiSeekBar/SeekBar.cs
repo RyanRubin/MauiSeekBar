@@ -20,9 +20,9 @@ public class SeekBar : GraphicsView, IDrawable
     private static readonly Color PositionTextStrokeColor = Colors.Gray;
     private static readonly Color PositionTextFontColor = Colors.Gray;
 
+    private bool isSkipMovePositionMarker;
     private float ticksWidth;
-    private readonly float positionMarkerStartX = TicksX - PositionMarkerHalfWidth;
-    private float positionMarkerX;
+    private float positionMarkerX = TicksX - PositionMarkerHalfWidth;
     private float positionTextX = TicksX;
 
     public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnIsStartAndEndMarkerVisibleChanged);
@@ -73,7 +73,7 @@ public class SeekBar : GraphicsView, IDrawable
         }
         else
         {
-            retVal = positionMillis / durationMillis * ticksWidth + positionMarkerStartX + PositionMarkerHalfWidth;
+            retVal = positionMillis / durationMillis * ticksWidth + TicksX - PositionMarkerHalfWidth;
         }
         return retVal;
     }
@@ -88,7 +88,7 @@ public class SeekBar : GraphicsView, IDrawable
         }
         else
         {
-            float positionMillis = positionMarkerX / (TicksX + ticksWidth - PositionMarkerHalfWidth) * durationMillis;
+            float positionMillis = (positionMarkerX - TicksX + PositionMarkerHalfWidth) / ticksWidth * durationMillis;
             retVal = new TimeSpan(0, 0, 0, 0, (int)positionMillis);
         }
         return retVal;
@@ -100,21 +100,24 @@ public class SeekBar : GraphicsView, IDrawable
         StartInteraction += SeekBar_StartInteraction;
         DragInteraction += SeekBar_DragInteraction;
         EndInteraction += SeekBar_EndInteraction;
-        positionMarkerX = positionMarkerStartX;
     }
 
     private void SeekBar_StartInteraction(object? sender, TouchEventArgs e)
     {
         IsPlaying = false;
         MovePositionMarker(e.Touches[0].X);
+        isSkipMovePositionMarker = true;
         Position = CalculatePosition();
+        isSkipMovePositionMarker = false;
     }
 
     private void SeekBar_DragInteraction(object? sender, TouchEventArgs e)
     {
         IsPlaying = false;
         MovePositionMarker(e.Touches[0].X);
+        isSkipMovePositionMarker = true;
         Position = CalculatePosition();
+        isSkipMovePositionMarker = false;
     }
 
     private void SeekBar_EndInteraction(object? sender, TouchEventArgs e)
@@ -124,6 +127,11 @@ public class SeekBar : GraphicsView, IDrawable
 
     private void MovePositionMarker(float x)
     {
+        if (isSkipMovePositionMarker)
+        {
+            return;
+        }
+
         positionMarkerX = x - PositionMarkerHalfWidth;
         positionMarkerX = Math.Clamp(
             positionMarkerX,
