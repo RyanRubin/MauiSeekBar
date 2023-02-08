@@ -6,11 +6,11 @@ public class VideoPlayer : ContentView
 {
     public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(Source), typeof(string), typeof(VideoPlayer), default, BindingMode.TwoWay, propertyChanged: OnSourceChanged);
     public string Source { get => (string)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
-    private static void OnSourceChanged(BindableObject bindable, object oldValue, object newValue)
+    private static async void OnSourceChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var videoPlayer = (VideoPlayer)bindable;
         string source = (string)newValue;
-        videoPlayer.LoadVideo(source);
+        await videoPlayer.LoadVideo(source);
     }
 
     public static readonly BindableProperty IsPlayingProperty = BindableProperty.Create(nameof(IsPlaying), typeof(bool), typeof(VideoPlayer), default, BindingMode.TwoWay, propertyChanged: OnIsPlayingChanged);
@@ -75,10 +75,14 @@ public class VideoPlayer : ContentView
         };
     }
 
-    private void LoadVideo(string videoFile)
+    private async Task LoadVideo(string videoFile)
     {
         if (string.IsNullOrEmpty(videoFile))
         {
+            if (webView != null)
+            {
+                await webView.EvaluateJavaScriptAsync("loadVideo()");
+            }
             Content = null;
         }
         else
