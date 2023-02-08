@@ -16,8 +16,13 @@ public class VideoPlayer : ContentView
     public static readonly BindableProperty IsPlayingProperty = BindableProperty.Create(nameof(IsPlaying), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay);
     public bool IsPlaying { get => (bool)GetValue(IsPlayingProperty); set => SetValue(IsPlayingProperty, value); }
 
-    public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay);
+    public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnPositionChanged);
     public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
+    private static async void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var videoPlayer = (VideoPlayer)bindable;
+        await videoPlayer.SetCurrentTimeUsingPosition();
+    }
 
     public static readonly BindableProperty DurationProperty = BindableProperty.Create(nameof(Duration), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay);
     public TimeSpan Duration { get => (TimeSpan)GetValue(DurationProperty); set => SetValue(DurationProperty, value); }
@@ -35,7 +40,8 @@ public class VideoPlayer : ContentView
         timer = Dispatcher.CreateTimer();
         timer.Interval = new TimeSpan(0, 0, 0, 0, 25);
         timer.Tick += (sender, e) => {
-            Position = stopwatch.Elapsed;
+            Position = Position.Add(stopwatch.Elapsed);
+            stopwatch.Restart();
             if (Position >= Duration)
             {
                 Pause();
@@ -79,10 +85,8 @@ public class VideoPlayer : ContentView
         if (Position >= Duration)
         {
             Position = default;
-            stopwatch.Reset();
             webView?.EvaluateJavaScriptAsync("setCurrentTime(0)");
         }
-        stopwatch.Start();
         timer.Start();
         IsPlaying = true;
         webView?.EvaluateJavaScriptAsync("play()");
@@ -90,9 +94,18 @@ public class VideoPlayer : ContentView
 
     public void Pause()
     {
-        stopwatch.Stop();
+        stopwatch.Reset();
         timer.Stop();
         IsPlaying = false;
         webView?.EvaluateJavaScriptAsync("pause()");
+    }
+
+    private async Task SetCurrentTimeUsingPosition()
+    {
+        float positionMillis = (float)Position.TotalMilliseconds;
+        if (webView != null)
+        {
+            await webView.EvaluateJavaScriptAsync($"setCurrentTime('{positionMillis / 1000}')");
+        }
     }
 }

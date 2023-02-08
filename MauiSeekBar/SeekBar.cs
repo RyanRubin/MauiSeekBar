@@ -75,6 +75,22 @@ public class SeekBar : GraphicsView, IDrawable
         return retVal;
     }
 
+    private TimeSpan CalculatePosition()
+    {
+        float durationMillis = (float)Duration.TotalMilliseconds;
+        TimeSpan retVal;
+        if (durationMillis == 0)
+        {
+            retVal = default;
+        }
+        else
+        {
+            float positionMillis = positionMarkerX / (TicksX + ticksWidth - PositionMarkerHalfWidth) * durationMillis;
+            retVal = new TimeSpan(0, 0, 0, 0, (int)positionMillis);
+        }
+        return retVal;
+    }
+
     public SeekBar()
     {
         Drawable = this;
@@ -87,11 +103,13 @@ public class SeekBar : GraphicsView, IDrawable
     private void SeekBar_StartInteraction(object? sender, TouchEventArgs e)
     {
         MovePositionMarker(e.Touches[0].X);
+        Position = CalculatePosition();
     }
 
     private void SeekBar_DragInteraction(object? sender, TouchEventArgs e)
     {
         MovePositionMarker(e.Touches[0].X);
+        Position = CalculatePosition();
     }
 
     private void SeekBar_EndInteraction(object? sender, TouchEventArgs e)
