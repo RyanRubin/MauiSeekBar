@@ -41,6 +41,9 @@ public class SeekBar : GraphicsView, IDrawable
         seekBar.Invalidate();
     }
 
+    public static readonly BindableProperty IsPlayingProperty = BindableProperty.Create(nameof(IsPlaying), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay);
+    public bool IsPlaying { get => (bool)GetValue(IsPlayingProperty); set => SetValue(IsPlayingProperty, value); }
+
     public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnPositionChanged);
     public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
     private static void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
@@ -102,12 +105,14 @@ public class SeekBar : GraphicsView, IDrawable
 
     private void SeekBar_StartInteraction(object? sender, TouchEventArgs e)
     {
+        IsPlaying = false;
         MovePositionMarker(e.Touches[0].X);
         Position = CalculatePosition();
     }
 
     private void SeekBar_DragInteraction(object? sender, TouchEventArgs e)
     {
+        IsPlaying = false;
         MovePositionMarker(e.Touches[0].X);
         Position = CalculatePosition();
     }

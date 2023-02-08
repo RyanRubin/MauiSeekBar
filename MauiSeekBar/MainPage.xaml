@@ -11,7 +11,7 @@
                            Position="{Binding Position}"
                            Duration="{Binding Duration}"
                            IsPlaying="{Binding IsPlaying}"
-                           Source="file:///C:/Temp/mp4.mp4">
+                           Source="file:///C:/Temp/BigBuckBunny.mp4">
             <local:VideoPlayer.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding PlayOrPauseCommand}"/>
             </local:VideoPlayer.GestureRecognizers>
@@ -20,7 +20,8 @@
                        Margin="5,0,5,5"
                        IsStartAndEndMarkerVisible="True"
                        Position="{Binding Position}"
-                       Duration="{Binding Duration}">
+                       Duration="{Binding Duration}"
+                       IsPlaying="{Binding IsPlaying}">
             <local:SeekBar.Triggers>
                 <DataTrigger TargetType="local:SeekBar" Binding="{Binding IsPlaying}" Value="False">
                     <Setter Property="IsPositionTextVisible" Value="True"/>

@@ -4,19 +4,32 @@ namespace MauiSeekBar;
 
 public class VideoPlayer : ContentView
 {
-    public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(Source), typeof(string), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnSourceChanged);
+    public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(Source), typeof(string), typeof(VideoPlayer), default, BindingMode.TwoWay, propertyChanged: OnSourceChanged);
     public string Source { get => (string)GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
     private static void OnSourceChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var videoPlayer = (VideoPlayer)bindable;
-        string videoFile = (string)newValue;
-        videoPlayer.LoadVideo(videoFile);
+        string source = (string)newValue;
+        videoPlayer.LoadVideo(source);
     }
 
-    public static readonly BindableProperty IsPlayingProperty = BindableProperty.Create(nameof(IsPlaying), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay);
+    public static readonly BindableProperty IsPlayingProperty = BindableProperty.Create(nameof(IsPlaying), typeof(bool), typeof(VideoPlayer), default, BindingMode.TwoWay, propertyChanged: OnIsPlayingChanged);
     public bool IsPlaying { get => (bool)GetValue(IsPlayingProperty); set => SetValue(IsPlayingProperty, value); }
+    private static void OnIsPlayingChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var videoPlayer = (VideoPlayer)bindable;
+        bool isPlaying = (bool)newValue;
+        if (isPlaying)
+        {
+            videoPlayer.Play();
+        }
+        else
+        {
+            videoPlayer.Pause();
+        }
+    }
 
-    public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnPositionChanged);
+    public static readonly BindableProperty PositionProperty = BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(VideoPlayer), default, BindingMode.TwoWay, propertyChanged: OnPositionChanged);
     public TimeSpan Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
     private static async void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
     {
@@ -24,10 +37,11 @@ public class VideoPlayer : ContentView
         await videoPlayer.SetCurrentTimeUsingPosition();
     }
 
-    public static readonly BindableProperty DurationProperty = BindableProperty.Create(nameof(Duration), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay);
+    public static readonly BindableProperty DurationProperty = BindableProperty.Create(nameof(Duration), typeof(TimeSpan), typeof(VideoPlayer), default, BindingMode.TwoWay);
     public TimeSpan Duration { get => (TimeSpan)GetValue(DurationProperty); set => SetValue(DurationProperty, value); }
 
     private WebView? webView;
+    private bool isSkipSetCurrentTimeUsingPosition;
 
     private readonly string videoPlayerHtmlFileUri;
     private readonly Stopwatch stopwatch;
@@ -40,7 +54,9 @@ public class VideoPlayer : ContentView
         timer = Dispatcher.CreateTimer();
         timer.Interval = new TimeSpan(0, 0, 0, 0, 25);
         timer.Tick += (sender, e) => {
+            isSkipSetCurrentTimeUsingPosition = true;
             Position = Position.Add(stopwatch.Elapsed);
+            isSkipSetCurrentTimeUsingPosition = false;
             stopwatch.Restart();
             if (Position >= Duration)
             {
@@ -102,6 +118,10 @@ public class VideoPlayer : ContentView
 
     private async Task SetCurrentTimeUsingPosition()
     {
+        if (isSkipSetCurrentTimeUsingPosition)
+        {
+            return;
+        }
         float positionMillis = (float)Position.TotalMilliseconds;
         if (webView != null)
         {

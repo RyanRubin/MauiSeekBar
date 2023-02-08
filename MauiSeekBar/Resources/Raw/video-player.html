@@ -28,6 +28,7 @@
         const loadVideo = (videoFileUri) => {
             addEventListener('contextmenu', (e) => e.preventDefault());
             videoPlayer.src = videoFileUri;
+            videoPlayer.volume = 1;
         };
 
         const getDuration = () => {
