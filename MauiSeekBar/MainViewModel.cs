@@ -60,6 +60,9 @@ public class MainViewModel : INotifyPropertyChanged
         {
             start = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Start)));
+
+            startText = Start.ToString("hh\\:mm\\:ss\\.fff");
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StartText)));
         }
     }
 
@@ -71,6 +74,43 @@ public class MainViewModel : INotifyPropertyChanged
         {
             end = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(End)));
+
+            endText = End.ToString("hh\\:mm\\:ss\\.fff");
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EndText)));
+        }
+    }
+
+    private string? startText;
+    public string? StartText
+    {
+        get => startText;
+        set
+        {
+            startText = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StartText)));
+
+            if (TimeSpan.TryParse(StartText, out TimeSpan start))
+            {
+                this.start = start;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Start)));
+            }
+        }
+    }
+
+    private string? endText;
+    public string? EndText
+    {
+        get => endText;
+        set
+        {
+            endText = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EndText)));
+
+            if (TimeSpan.TryParse(EndText, out TimeSpan end))
+            {
+                this.end = end;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(End)));
+            }
         }
     }
 
@@ -84,6 +124,8 @@ public class MainViewModel : INotifyPropertyChanged
 
     public MainViewModel()
     {
+        Start = default;
+
         PlayOrPauseCommand = new Command(() => {
             if (IsPlaying)
             {
