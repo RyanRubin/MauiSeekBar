@@ -19,20 +19,19 @@
         <local:SeekBar Grid.Row="1"
                        Margin="5,0,5,5"
                        IsStartAndEndMarkerVisible="True"
+                       IsPositionTextVisible="True"
                        Position="{Binding Position}"
                        Duration="{Binding Duration}"
-                       IsPlaying="{Binding IsPlaying}">
-            <local:SeekBar.Triggers>
-                <DataTrigger TargetType="local:SeekBar" Binding="{Binding IsPlaying}" Value="False">
-                    <Setter Property="IsPositionTextVisible" Value="True"/>
-                </DataTrigger>
-            </local:SeekBar.Triggers>
-        </local:SeekBar>
-        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" ColumnSpacing="10">
+                       IsPlaying="{Binding IsPlaying}"
+                       Start="{Binding Start}"
+                       End="{Binding End}"/>
+        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*,*,*" ColumnSpacing="10">
             <Button Grid.Column="0" Text="--" Command="{Binding Rewind10SecCommand}"/>
             <Button Grid.Column="1" Text="-" Command="{Binding Rewind1SecCommand}"/>
             <Button Grid.Column="2" Text="+" Command="{Binding Forward1SecCommand}"/>
             <Button Grid.Column="3" Text="++" Command="{Binding Forward10SecCommand}"/>
+            <Button Grid.Column="4" Text="Start" Command="{Binding StartCommand}"/>
+            <Button Grid.Column="5" Text="End" Command="{Binding EndCommand}"/>
         </Grid>
     </Grid>
 </ContentPage>

@@ -52,11 +52,35 @@ public class MainViewModel : INotifyPropertyChanged
         }
     }
 
-    public ICommand? PlayOrPauseCommand { get; set; }
-    public ICommand? Rewind10SecCommand { get; set; }
-    public ICommand? Rewind1SecCommand { get; set; }
-    public ICommand? Forward1SecCommand { get; set; }
-    public ICommand? Forward10SecCommand { get; set; }
+    private TimeSpan start;
+    public TimeSpan Start
+    {
+        get => start;
+        set
+        {
+            start = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Start)));
+        }
+    }
+
+    private TimeSpan end;
+    public TimeSpan End
+    {
+        get => end;
+        set
+        {
+            end = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(End)));
+        }
+    }
+
+    public ICommand PlayOrPauseCommand { get; set; }
+    public ICommand Rewind10SecCommand { get; set; }
+    public ICommand Rewind1SecCommand { get; set; }
+    public ICommand Forward1SecCommand { get; set; }
+    public ICommand Forward10SecCommand { get; set; }
+    public ICommand StartCommand { get; set; }
+    public ICommand EndCommand { get; set; }
 
     public MainViewModel()
     {
@@ -81,6 +105,12 @@ public class MainViewModel : INotifyPropertyChanged
         });
         Forward10SecCommand = new Command(() => {
             Position = Position.Add(new TimeSpan(0, 0, 10));
+        });
+        StartCommand = new Command(() => {
+            Start = Position;
+        });
+        EndCommand = new Command(() => {
+            End = Position;
         });
     }
 

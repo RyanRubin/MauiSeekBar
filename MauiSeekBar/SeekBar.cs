@@ -10,6 +10,8 @@ public class SeekBar : GraphicsView, IDrawable
     private const float PositionMarkerHalfWidth = PositionMarkerWidth / 2;
     private const float PositionTextWidth = 95;
     private const float PositionTextHalfWidth = PositionTextWidth / 2;
+    private const float StartMarkerWidth = 13;
+    private const float EndMarkerWidth = 13;
 
     private static readonly Color StartAndEndFillColor = Color.FromArgb("#ffffbbbb");
     private static readonly Color StartAndEndStrokeColor = Colors.DarkRed;
@@ -24,6 +26,8 @@ public class SeekBar : GraphicsView, IDrawable
     private float ticksWidth;
     private float positionMarkerX = TicksX - PositionMarkerHalfWidth;
     private float positionTextX = TicksX;
+    private float startMarkerX = TicksX - StartMarkerWidth;
+    private float endMarkerX = TicksX;
 
     public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnIsStartAndEndMarkerVisibleChanged);
     public bool IsStartAndEndMarkerVisible { get => (bool)GetValue(IsStartAndEndMarkerVisibleProperty); set => SetValue(IsStartAndEndMarkerVisibleProperty, value); }
@@ -49,7 +53,7 @@ public class SeekBar : GraphicsView, IDrawable
     private static void OnPositionChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var seekBar = (SeekBar)bindable;
-        seekBar.MovePositionMarker(seekBar.CalculatePositionMarkerX());
+        seekBar.MovePositionMarker(seekBar.CalculateMarkerX(seekBar.Position));
         seekBar.Invalidate();
     }
 
@@ -58,13 +62,42 @@ public class SeekBar : GraphicsView, IDrawable
     private static void OnDurationChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var seekBar = (SeekBar)bindable;
-        seekBar.MovePositionMarker(seekBar.CalculatePositionMarkerX());
+        seekBar.End = seekBar.Duration;
+        seekBar.MovePositionMarker(seekBar.CalculateMarkerX(seekBar.Position));
+        seekBar.MoveStartMarker(seekBar.CalculateMarkerX(seekBar.Start));
+        seekBar.MoveEndMarker(seekBar.CalculateMarkerX(seekBar.End));
         seekBar.Invalidate();
     }
 
-    private float CalculatePositionMarkerX()
+    public static readonly BindableProperty StartProperty = BindableProperty.Create(nameof(Start), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnStartChanged);
+    public TimeSpan Start { get => (TimeSpan)GetValue(StartProperty); set => SetValue(StartProperty, value); }
+    private static void OnStartChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        float positionMillis = (float)Position.TotalMilliseconds;
+        var seekBar = (SeekBar)bindable;
+        if (seekBar.Start > seekBar.End)
+        {
+            seekBar.End = seekBar.Start;
+        }
+        seekBar.MoveStartMarker(seekBar.CalculateMarkerX(seekBar.Start));
+        seekBar.Invalidate();
+    }
+
+    public static readonly BindableProperty EndProperty = BindableProperty.Create(nameof(End), typeof(TimeSpan), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnEndChanged);
+    public TimeSpan End { get => (TimeSpan)GetValue(EndProperty); set => SetValue(EndProperty, value); }
+    private static void OnEndChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var seekBar = (SeekBar)bindable;
+        if (seekBar.End < seekBar.Start)
+        {
+            seekBar.Start = seekBar.End;
+        }
+        seekBar.MoveEndMarker(seekBar.CalculateMarkerX(seekBar.End));
+        seekBar.Invalidate();
+    }
+
+    private float CalculateMarkerX(TimeSpan markerTimeSpan)
+    {
+        float markerTimeSpanMillis = (float)markerTimeSpan.TotalMilliseconds;
         float durationMillis = (float)Duration.TotalMilliseconds;
         float retVal;
         if (durationMillis == 0)
@@ -73,7 +106,7 @@ public class SeekBar : GraphicsView, IDrawable
         }
         else
         {
-            retVal = positionMillis / durationMillis * ticksWidth + TicksX;
+            retVal = markerTimeSpanMillis / durationMillis * ticksWidth + TicksX;
         }
         return retVal;
     }
@@ -99,30 +132,25 @@ public class SeekBar : GraphicsView, IDrawable
         Drawable = this;
         StartInteraction += SeekBar_StartInteraction;
         DragInteraction += SeekBar_DragInteraction;
-        EndInteraction += SeekBar_EndInteraction;
     }
 
     private void SeekBar_StartInteraction(object? sender, TouchEventArgs e)
     {
-        IsPlaying = false;
-        MovePositionMarker(e.Touches[0].X);
-        isSkipMovePositionMarker = true;
-        Position = CalculatePosition();
-        isSkipMovePositionMarker = false;
+        HandleStartAndDragInteraction(e.Touches[0].X);
     }
 
     private void SeekBar_DragInteraction(object? sender, TouchEventArgs e)
     {
+        HandleStartAndDragInteraction(e.Touches[0].X);
+    }
+
+    private void HandleStartAndDragInteraction(float x)
+    {
         IsPlaying = false;
-        MovePositionMarker(e.Touches[0].X);
+        MovePositionMarker(x);
         isSkipMovePositionMarker = true;
         Position = CalculatePosition();
         isSkipMovePositionMarker = false;
-    }
-
-    private void SeekBar_EndInteraction(object? sender, TouchEventArgs e)
-    {
-
     }
 
     private void MovePositionMarker(float x)
@@ -149,19 +177,43 @@ public class SeekBar : GraphicsView, IDrawable
         Invalidate();
     }
 
+    private void MoveStartMarker(float x)
+    {
+        startMarkerX = x - StartMarkerWidth;
+        startMarkerX = Math.Clamp(
+            startMarkerX,
+            TicksX - StartMarkerWidth,
+            TicksX + ticksWidth - StartMarkerWidth
+        );
+
+        Invalidate();
+    }
+
+    private void MoveEndMarker(float x)
+    {
+        endMarkerX = x;
+        endMarkerX = Math.Clamp(
+            endMarkerX,
+            TicksX,
+            TicksX + ticksWidth
+        );
+
+        Invalidate();
+    }
+
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
         if (IsStartAndEndMarkerVisible)
         {
-            DrawStartToEndBar(canvas, 13, 33, 87, 15);
+            DrawStartToEndBar(canvas, startMarkerX + StartMarkerWidth, 33, endMarkerX - startMarkerX - StartMarkerWidth, 15);
         }
         ticksWidth = (float)Width - TicksX * 2;
         DrawTicks(canvas, TicksX, 30, ticksWidth, 21);
         DrawPositionMarker(canvas, positionMarkerX, 48, PositionMarkerWidth, 19);
         if (IsStartAndEndMarkerVisible)
         {
-            DrawStartMarker(canvas, 0, 20, 13, 13);
-            DrawEndMarker(canvas, 100, 20, 13, 13);
+            DrawStartMarker(canvas, startMarkerX, 20, StartMarkerWidth, 13);
+            DrawEndMarker(canvas, endMarkerX, 20, EndMarkerWidth, 13);
         }
         if (IsPositionTextVisible)
         {
