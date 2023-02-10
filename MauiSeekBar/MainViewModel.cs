@@ -7,6 +7,8 @@ public class MainViewModel : INotifyPropertyChanged
 {
     public Action? Play { get; set; }
     public Action? Pause { get; set; }
+    public bool IsStartFocused { get; set; }
+    public bool IsEndFocused { get; set; }
 
     private string? videoFile;
     public string? VideoFile
@@ -61,8 +63,11 @@ public class MainViewModel : INotifyPropertyChanged
             start = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Start)));
 
-            startText = Start.ToString("hh\\:mm\\:ss\\.fff");
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StartText)));
+            if (!IsStartFocused)
+            {
+                startText = Start.ToString("hh\\:mm\\:ss\\.fff");
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StartText)));
+            }
         }
     }
 
@@ -75,8 +80,11 @@ public class MainViewModel : INotifyPropertyChanged
             end = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(End)));
 
-            endText = End.ToString("hh\\:mm\\:ss\\.fff");
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EndText)));
+            if (!IsEndFocused)
+            {
+                endText = End.ToString("hh\\:mm\\:ss\\.fff");
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EndText)));
+            }
         }
     }
 

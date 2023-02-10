@@ -31,9 +31,9 @@
             <Button Grid.Column="2" Text="+" Command="{Binding Forward1SecCommand}"/>
             <Button Grid.Column="3" Text="++" Command="{Binding Forward10SecCommand}"/>
             <Button Grid.Column="4" Text="Start" Command="{Binding StartCommand}"/>
-            <Entry Grid.Column="5" Text="{Binding StartText}"/>
+            <Entry Grid.Column="5" Text="{Binding StartText}" Focused="StartEntry_Focused" Unfocused="StartEntry_Unfocused"/>
             <Button Grid.Column="6" Text="End" Command="{Binding EndCommand}"/>
-            <Entry Grid.Column="7" Text="{Binding EndText}"/>
+            <Entry Grid.Column="7" Text="{Binding EndText}" Focused="EndEntry_Focused" Unfocused="EndEntry_Unfocused"/>
         </Grid>
     </Grid>
 </ContentPage>
