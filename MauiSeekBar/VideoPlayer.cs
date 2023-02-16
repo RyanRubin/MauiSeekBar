@@ -49,6 +49,18 @@ public class VideoPlayer : ContentView
     public static readonly BindableProperty DurationProperty = BindableProperty.Create(nameof(Duration), typeof(TimeSpan), typeof(VideoPlayer), default, BindingMode.TwoWay);
     public TimeSpan Duration { get => (TimeSpan)GetValue(DurationProperty); set => SetValue(DurationProperty, value); }
 
+    public new static readonly BindableProperty IsEnabledProperty = BindableProperty.Create(nameof(IsEnabled), typeof(bool), typeof(VideoPlayer), true, BindingMode.TwoWay, propertyChanged: OnIsEnabledChanged);
+    public new bool IsEnabled { get => (bool)GetValue(IsEnabledProperty); set => SetValue(IsEnabledProperty, value); }
+    private static void OnIsEnabledChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var videoPlayer = (VideoPlayer)bindable;
+        bool isEnabled = (bool)newValue;
+        if (!isEnabled)
+        {
+            videoPlayer.Pause();
+        }
+    }
+
     private WebView? webView;
     private bool isSkipSetCurrentTimeUsingPosition;
 
@@ -111,6 +123,10 @@ public class VideoPlayer : ContentView
 
     public void Play()
     {
+        if (!IsEnabled)
+        {
+            return;
+        }
         if (Position >= Duration)
         {
             Position = default;

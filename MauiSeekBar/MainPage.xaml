@@ -11,7 +11,7 @@
                            Position="{Binding Position}"
                            Duration="{Binding Duration}"
                            IsPlaying="{Binding IsPlaying}"
-                           Source="file:///C:/Temp/BigBuckBunny.mp4">
+                           Source="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">
             <local:VideoPlayer.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding PlayOrPauseCommand}"/>
             </local:VideoPlayer.GestureRecognizers>
@@ -19,7 +19,6 @@
         <local:SeekBar Grid.Row="1"
                        Margin="5,0,5,5"
                        IsStartAndEndMarkerVisible="True"
-                       IsPositionTextVisible="True"
                        Position="{Binding Position}"
                        Duration="{Binding Duration}"
                        IsPlaying="{Binding IsPlaying}"

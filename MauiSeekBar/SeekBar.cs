@@ -15,6 +15,8 @@ public class SeekBar : GraphicsView, IDrawable
 
     private static readonly Color StartAndEndFillColor = Color.FromArgb("#ffffbbbb");
     private static readonly Color StartAndEndStrokeColor = Colors.DarkRed;
+    private static readonly Color StartAndEndDisabledFillColor = Colors.LightGray;
+    private static readonly Color StartAndEndDisabledStrokeColor = Colors.DarkGray;
     private static readonly Color TicksStrokeColor = Colors.Black;
     private static readonly Color PositionMarkerFillColor = Colors.White;
     private static readonly Color PositionMarkerStrokeColor = Colors.Black;
@@ -32,14 +34,6 @@ public class SeekBar : GraphicsView, IDrawable
     public static readonly BindableProperty IsStartAndEndMarkerVisibleProperty = BindableProperty.Create(nameof(IsStartAndEndMarkerVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnIsStartAndEndMarkerVisibleChanged);
     public bool IsStartAndEndMarkerVisible { get => (bool)GetValue(IsStartAndEndMarkerVisibleProperty); set => SetValue(IsStartAndEndMarkerVisibleProperty, value); }
     private static void OnIsStartAndEndMarkerVisibleChanged(BindableObject bindable, object oldValue, object newValue)
-    {
-        var seekBar = (SeekBar)bindable;
-        seekBar.Invalidate();
-    }
-
-    public static readonly BindableProperty IsPositionTextVisibleProperty = BindableProperty.Create(nameof(IsPositionTextVisible), typeof(bool), typeof(SeekBar), default, BindingMode.TwoWay, propertyChanged: OnIsPositionTextVisibleChanged);
-    public bool IsPositionTextVisible { get => (bool)GetValue(IsPositionTextVisibleProperty); set => SetValue(IsPositionTextVisibleProperty, value); }
-    private static void OnIsPositionTextVisibleChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var seekBar = (SeekBar)bindable;
         seekBar.Invalidate();
@@ -95,6 +89,14 @@ public class SeekBar : GraphicsView, IDrawable
         seekBar.Invalidate();
     }
 
+    public new static readonly BindableProperty IsEnabledProperty = BindableProperty.Create(nameof(IsEnabled), typeof(bool), typeof(SeekBar), true, BindingMode.TwoWay, propertyChanged: OnIsEnabledChanged);
+    public new bool IsEnabled { get => (bool)GetValue(IsEnabledProperty); set => SetValue(IsEnabledProperty, value); }
+    private static void OnIsEnabledChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var seekBar = (SeekBar)bindable;
+        seekBar.Invalidate();
+    }
+
     private float CalculateMarkerX(TimeSpan markerTimeSpan)
     {
         float markerTimeSpanMillis = (float)markerTimeSpan.TotalMilliseconds;
@@ -146,6 +148,10 @@ public class SeekBar : GraphicsView, IDrawable
 
     private void HandleStartAndDragInteraction(float x)
     {
+        if (!IsEnabled)
+        {
+            return;
+        }
         IsPlaying = false;
         MovePositionMarker(x);
         isSkipMovePositionMarker = true;
@@ -209,24 +215,27 @@ public class SeekBar : GraphicsView, IDrawable
         }
         ticksWidth = (float)Width - TicksX * 2;
         DrawTicks(canvas, TicksX, 30, ticksWidth, 21);
-        DrawPositionMarker(canvas, positionMarkerX, 48, PositionMarkerWidth, 19);
+        if (IsEnabled)
+        {
+            DrawPositionMarker(canvas, positionMarkerX, 48, PositionMarkerWidth, 19);
+        }
         if (IsStartAndEndMarkerVisible)
         {
             DrawStartMarker(canvas, startMarkerX, 20, StartMarkerWidth, 13);
             DrawEndMarker(canvas, endMarkerX, 20, EndMarkerWidth, 13);
         }
-        if (IsPositionTextVisible)
+        if (IsEnabled)
         {
             DrawPositionText(canvas, positionTextX, 0, PositionTextWidth, 20);
         }
     }
 
-    private static void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)
+    private void DrawStartToEndBar(ICanvas canvas, float x, float y, float w, float h)
     {
-        canvas.FillColor = StartAndEndFillColor;
+        canvas.FillColor = IsEnabled ? StartAndEndFillColor : StartAndEndDisabledFillColor;
         canvas.FillRectangle(x, y, w, h);
 
-        canvas.StrokeColor = StartAndEndStrokeColor;
+        canvas.StrokeColor = IsEnabled ? StartAndEndStrokeColor : StartAndEndDisabledStrokeColor;
         canvas.StrokeSize = 1;
         canvas.DrawRectangle(x, y, w, h);
     }
@@ -280,7 +289,7 @@ public class SeekBar : GraphicsView, IDrawable
         canvas.DrawPath(path);
     }
 
-    private static void DrawStartMarker(ICanvas canvas, float x, float y, float w, float h)
+    private void DrawStartMarker(ICanvas canvas, float x, float y, float w, float h)
     {
         var path = new PathF();
 
@@ -290,15 +299,15 @@ public class SeekBar : GraphicsView, IDrawable
         path.LineTo(x, y + h);
         path.LineTo(x + w, y);
 
-        canvas.FillColor = StartAndEndFillColor;
+        canvas.FillColor = IsEnabled ? StartAndEndFillColor : StartAndEndDisabledFillColor;
         canvas.FillPath(path);
 
-        canvas.StrokeColor = StartAndEndStrokeColor;
+        canvas.StrokeColor = IsEnabled ? StartAndEndStrokeColor : StartAndEndDisabledStrokeColor;
         canvas.StrokeSize = 1;
         canvas.DrawPath(path);
     }
 
-    private static void DrawEndMarker(ICanvas canvas, float x, float y, float w, float h)
+    private void DrawEndMarker(ICanvas canvas, float x, float y, float w, float h)
     {
         var path = new PathF();
 
@@ -308,10 +317,10 @@ public class SeekBar : GraphicsView, IDrawable
         path.LineTo(x, y + h);
         path.LineTo(x, y);
 
-        canvas.FillColor = StartAndEndFillColor;
+        canvas.FillColor = IsEnabled ? StartAndEndFillColor : StartAndEndDisabledFillColor;
         canvas.FillPath(path);
 
-        canvas.StrokeColor = StartAndEndStrokeColor;
+        canvas.StrokeColor = IsEnabled ? StartAndEndStrokeColor : StartAndEndDisabledStrokeColor;
         canvas.StrokeSize = 1;
         canvas.DrawPath(path);
     }
